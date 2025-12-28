@@ -1,0 +1,25 @@
+{% extends 'core/base.html' %}
+
+{% block title %}কুইজ হোম - কুইজ অ্যাপ্লিকেশন{% endblock %}
+
+{% block content %}
+<h1>কুইজ অ্যাপ্লিকেশনে স্বাগতম</h1>
+<p style="color: #666; margin-bottom: 30px; font-size: 1.1em;">শুরু করতে একটি কুইজ নির্বাচন করুন। লগইন প্রয়োজন নেই!</p>
+
+{% if quizzes %}
+    {% for quiz in quizzes %}
+        <div class="quiz-card">
+            <h3>{{ quiz.title }}</h3>
+            {% if quiz.description %}
+                <p>{{ quiz.description }}</p>
+            {% endif %}
+            <p><strong>সময় সীমা:</strong> {{ quiz.time_limit }} মিনিট</p>
+            <p><strong>প্রশ্ন:</strong> {{ quiz.get_total_questions }}টি</p>
+            <a href="{% url 'core:start_quiz' quiz.id %}" class="btn">কুইজ শুরু করুন</a>
+        </div>
+    {% endfor %}
+{% else %}
+    <p style="color: #666; text-align: center; padding: 40px;">এই মুহূর্তে কোন কুইজ উপলব্ধ নেই। অনুগ্রহ করে পরে আবার চেক করুন।</p>
+{% endif %}
+{% endblock %}
+

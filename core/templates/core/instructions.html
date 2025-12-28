@@ -1,0 +1,234 @@
+{% extends 'core/base.html' %}
+
+{% block title %}নির্দেশনা - {{ quiz.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        padding: 0 !important;
+        background: #f5f7fa !important;
+    }
+    
+    body .container {
+        max-width: 100% !important;
+        width: 100% !important;
+        min-height: 100vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Top Header */
+    .instructions-header {
+        background: #148386;
+        color: white;
+        padding: 12px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .instructions-header-left {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .instructions-header-left .page-info {
+        font-size: 0.85em;
+        font-weight: 600;
+    }
+    
+    .instructions-header-left h1 {
+        color: white;
+        font-size: 1em;
+        margin: 0;
+        font-weight: 500;
+    }
+    
+    .instructions-header-center {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+        justify-content: center;
+    }
+    
+    .instructions-header-center .timer-icon {
+        font-size: 1.2em;
+    }
+    
+    .instructions-header-center .timer-text {
+        font-size: 0.85em;
+    }
+    
+    .instructions-header-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 4px;
+    }
+    
+    .instructions-header-right .progress-info {
+        font-size: 0.8em;
+        font-weight: 500;
+    }
+    
+    .instructions-header-right .user-info {
+        font-size: 0.75em;
+        opacity: 0.9;
+    }
+    
+    /* Main Content */
+    .instructions-content {
+        flex: 1;
+        background: white;
+        padding: 30px 40px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+    
+    .instructions-section {
+        margin-bottom: 20px;
+    }
+    
+    .instructions-section h2 {
+        color: #148386;
+        font-size: 1.2em;
+        font-weight: 600;
+        margin-bottom: 12px;
+        text-decoration: underline;
+    }
+    
+    .instructions-section p {
+        color: #333;
+        font-size: 1em;
+        line-height: 1.8;
+        margin-bottom: 10px;
+    }
+    
+    .instructions-section .highlight {
+        background: #e4f3f2;
+        color: #148386;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-weight: 600;
+    }
+    
+    .instructions-content {
+        position: relative;
+    }
+    
+    .question-number-indicator {
+        position: absolute;
+        left: 20px;
+        top: 30px;
+        width: 40px;
+        height: 40px;
+        background: #148386;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2em;
+        z-index: 10;
+    }
+    
+    
+    /* Bottom Footer */
+    .instructions-footer {
+        background: #148386;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: flex-end;
+        box-shadow: 0 -2px 8px rgba(20, 131, 134, 0.2);
+    }
+    
+    .start-exam-btn {
+        background: #148386;
+        color: white;
+        border: 2px solid #0f6b6d;
+        padding: 12px 30px;
+        border-radius: 4px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .start-exam-btn:hover {
+        background: #0f6b6d;
+        border-color: #0a5254;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px rgba(20, 131, 134, 0.3);
+    }
+    
+    .start-exam-btn:active {
+        transform: translateY(0);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Top Header -->
+    <div class="instructions-header">
+        <div class="instructions-header-left">
+            <div class="page-info">পৃষ্টা: 1</div>
+            <h1>পরীক্ষা: {{ quiz.title }}</h1>
+        </div>
+        <div class="instructions-header-center">
+            <span class="timer-icon">⏱</span>
+            <span class="timer-text">পরীক্ষার সময়: {{ time_limit }} মিনিট</span>
+        </div>
+        <div class="instructions-header-right">
+            <div class="progress-info">অগ্রগতি 0%</div>
+            <div class="user-info">পরীক্ষার্থী: <strong>{{ user_name }}</strong></div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="instructions-content">        
+        <div class="instructions-section">
+            <h2>সময় বাকি আছে</h2>
+            <p>এই আইকন <span style="font-size: 1.2em;">⏱</span> কী পরিমাণ সময় বাকি আছে তা নির্দেশ করে। পরীক্ষা বিভাগে {{ time_limit }} মিনিটের একটি টাইমার রয়েছে।</p>
+        </div>
+        
+        <div class="instructions-section">
+            <h2>পরীক্ষার মধ্য দিয়ে নেভিগেট করা</h2>
+            <p>পরবর্তী প্রশ্নে যাওয়ার জন্য <span class="highlight">এগিয়ে যান →</span> বাটনে ক্লিক করুন।</p>
+            <p>আগের প্রশ্নে ফিরে যাওয়ার জন্য <span class="highlight">← ফেরত যান</span> বাটনে ক্লিক করুন।</p>
+        </div>
+        
+        <div class="instructions-section">
+            <h2>প্রশ্নগুলির উত্তর দেওয়া</h2>
+            <p>সঠিক উত্তর নির্বাচন করার জন্য মাউস আইকন নাড়ান এবং ভিন্ন উত্তরে ক্লিক করে আপনার নির্বাচন পরিবর্তন করতে পারেন।</p>
+        </div>
+        
+        <div class="instructions-section">
+            <h2>পরীক্ষার তথ্য</h2>
+            <p><strong>মোট প্রশ্ন:</strong> {{ total_questions }}টি</p>
+            <p><strong>সময় সীমা:</strong> {{ time_limit }} মিনিট</p>
+        </div>
+    </div>
+    
+    <!-- Bottom Footer -->
+    <div class="instructions-footer">
+        <form method="post" style="margin: 0;">
+            {% csrf_token %}
+            <button type="submit" class="start-exam-btn">পরীক্ষাটি শুরু করুন →</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

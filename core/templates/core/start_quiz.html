@@ -1,0 +1,34 @@
+{% extends 'core/base.html' %}
+
+{% block title %}কুইজ শুরু করুন - {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<h1>{{ quiz.title }}</h1>
+{% if quiz.description %}
+    <p style="color: #666; margin-bottom: 20px;">{{ quiz.description }}</p>
+{% endif %}
+
+<div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+    <p><strong>সময় সীমা:</strong> {{ quiz.time_limit }} মিনিট</p>
+    <p><strong>মোট প্রশ্ন:</strong> {{ quiz.get_total_questions }}টি</p>
+</div>
+
+<h2>আপনার নাম লিখুন</h2>
+<p style="color: #666; margin-bottom: 20px;">কুইজ শুরু করতে অনুগ্রহ করে আপনার নাম লিখুন।</p>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.name.label_tag }}
+        {{ form.name }}
+        {% if form.name.errors %}
+            <div style="color: #dc3545; margin-top: 5px;">
+                {{ form.name.errors }}
+            </div>
+        {% endif %}
+    </div>
+    <button type="submit" class="btn">কুইজ শুরু করুন</button>
+    <a href="{% url 'core:home' %}" class="btn btn-secondary">হোমে ফিরে যান</a>
+</form>
+{% endblock %}
+

@@ -1,0 +1,43 @@
+{% extends 'core/base.html' %}
+
+{% block title %}কুইজ ফলাফল - {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="results-container">
+    <h1>কুইজ ফলাফল</h1>
+    <h2>{{ quiz.title }}</h2>
+    
+    <div style="margin: 30px 0;">
+        <p style="font-size: 1.3em; color: #666;">
+            <strong>পরীক্ষার্থী:</strong> {{ user_name }}
+        </p>
+    </div>
+    
+    <div class="score-display">
+        {{ score }} / {{ total_questions }}
+    </div>
+    
+    <div class="percentage">
+        {{ percentage }}%
+    </div>
+    
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 30px 0;">
+        <p style="font-size: 1.1em;">
+            {% if percentage >= 80 %}
+                <span style="color: #28a745;">🎉 চমৎকার! অসাধারণ কাজ!</span>
+            {% elif percentage >= 60 %}
+                <span style="color: #ffc107;">👍 ভালো কাজ! চালিয়ে যান!</span>
+            {% elif percentage >= 40 %}
+                <span style="color: #ff9800;">📚 খারাপ নয়, তবে উন্নতির সুযোগ আছে।</span>
+            {% else %}
+                <span style="color: #dc3545;">💪 অনুশীলন চালিয়ে যান!</span>
+            {% endif %}
+        </p>
+    </div>
+    
+    <div style="margin-top: 40px;">
+        <a href="{% url 'core:home' %}" class="btn">আরেকটি কুইজ করুন</a>
+    </div>
+</div>
+{% endblock %}
+
