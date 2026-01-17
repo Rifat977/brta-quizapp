@@ -10,6 +10,11 @@ class Quiz(models.Model):
         help_text="Time limit in minutes",
         validators=[MinValueValidator(1)]
     )
+    language = models.CharField(
+        max_length=50,
+        default='বাংলা',
+        help_text='Language of the quiz'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
