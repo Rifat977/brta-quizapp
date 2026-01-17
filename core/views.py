@@ -20,25 +20,20 @@ def home(request):
 
 
 def start_quiz(request, quiz_id):
-    """Page where user enters their name before starting the quiz"""
+    """Page where user confirms details before starting the quiz"""
     quiz = get_object_or_404(Quiz, id=quiz_id, is_active=True)
     
     if request.method == 'POST':
-        form = NameForm(request.POST)
-        if form.is_valid():
-            name = form.cleaned_data['name']
-            # Store name and quiz info in session
-            request.session['quiz_id'] = quiz_id
-            request.session['user_name'] = name
-            request.session['answers'] = {}
-            # Don't start timer yet - wait for instructions page
-            return redirect('core:instructions', quiz_id=quiz_id)
-    else:
-        form = NameForm()
+        # Static values - no form validation needed
+        # Store quiz info in session with static name
+        request.session['quiz_id'] = quiz_id
+        request.session['user_name'] = 'MD'  # Static name value
+        request.session['answers'] = {}
+        # Don't start timer yet - wait for instructions page
+        return redirect('core:instructions', quiz_id=quiz_id)
     
     context = {
-        'quiz': quiz,
-        'form': form
+        'quiz': quiz
     }
     return render(request, 'core/start_quiz.html', context)
 
@@ -160,7 +155,23 @@ def submit_quiz(request, quiz_id):
     request.session.pop('start_time', None)
     request.session.pop('answers', None)
     
-    return redirect('core:results', quiz_id=quiz_id)
+    return redirect('core:completion', quiz_id=quiz_id)
+
+
+def completion(request, quiz_id):
+    """Display completion message after exam ends"""
+    quiz = get_object_or_404(Quiz, id=quiz_id, is_active=True)
+    
+    # Check if results exist
+    if 'quiz_results' not in request.session:
+        messages.warning(request, 'No results found. Please complete a quiz first.')
+        return redirect('core:home')
+    
+    context = {
+        'quiz': quiz,
+    }
+    
+    return render(request, 'core/completion.html', context)
 
 
 def results(request, quiz_id):

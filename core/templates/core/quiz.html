@@ -226,8 +226,8 @@
     }
     
     .question-number-item.answered {
-        background: #e4f3f2;
-        color: #148386;
+        background: #a6a4a4;
+        color: #666;
         font-weight: 600;
     }
     
@@ -597,6 +597,106 @@
             transform: translateY(0);
         }
     }
+    
+    /* Confirmation Modal */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .modal-overlay.show {
+        display: flex;
+    }
+    
+    .confirmation-modal {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        width: 90%;
+        max-width: 450px;
+        overflow: hidden;
+        animation: slideUp 0.3s ease;
+    }
+    
+    .modal-header {
+        background: #969494;
+        padding: 15px 20px;
+        text-align: center;
+    }
+    
+    .modal-header h3 {
+        margin: 0;
+        color: #333;
+        font-size: 1.1em;
+        font-weight: 600;
+    }
+    
+    .modal-content {
+        padding: 40px 30px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+    }
+    
+    .modal-icon {
+        width: 80px;
+        height: 80px;
+        background: #e0f7f8;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3em;
+        color: white;
+        font-weight: bold;
+    }
+    
+    .modal-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .modal-btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 6px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex: 1;
+        max-width: 150px;
+    }
+    
+    .modal-btn-cancel {
+        background: #148386;
+        color: white;
+    }
+    
+    .modal-btn-cancel:hover {
+        background: #0f6b6e;
+    }
+    
+    .modal-btn-confirm {
+        background: #148386;
+        color: white;
+    }
+    
+    .modal-btn-confirm:hover {
+        background: #0f6b6e;
+    }
 </style>
 {% endblock %}
 
@@ -626,7 +726,7 @@
                     পরীক্ষা সমাপ্ত
                 </button>
             </div>
-            <div class="user-info">পরীক্ষার্থী: <strong>{{ user_name }}</strong></div>
+            <div class="user-info">পরীক্ষার্থী: <strong>Nazmul Amin MD</strong></div>
         </div>
     </div>
     
@@ -713,6 +813,26 @@
     <!-- Scroll Notification -->
     <div class="scroll-notification" id="scroll-notification">
         এই পৃষ্ঠাটি স্ক্রল করা প্রয়োজন
+    </div>
+    
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmation-modal">
+        <div class="confirmation-modal">
+            <div class="modal-header">
+                <h3>সমাপ্ত হওয়া নিশ্চিত করুন</h3>
+            </div>
+            <div class="modal-content">
+                <div class="modal-icon">?</div>
+                <div class="modal-buttons">
+                    <button type="button" class="modal-btn modal-btn-cancel" onclick="closeModal()">
+                        বাতিল করুন
+                    </button>
+                    <button type="button" class="modal-btn modal-btn-confirm" onclick="confirmSubmit()">
+                        সমাপ্ত করুন
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -873,12 +993,39 @@
         updateProgress();
     }
     
-    // Submit quiz
+    // Show confirmation modal
     function submitQuiz() {
-        if (confirm('আপনি কি নিশ্চিত যে আপনি কুইজ জমা দিতে চান? জমা দেওয়ার পর আপনি আপনার উত্তর পরিবর্তন করতে পারবেন না।')) {
-            quizForm.submit();
+        const modal = document.getElementById('confirmation-modal');
+        if (modal) {
+            modal.classList.add('show');
         }
     }
+    
+    // Close modal
+    function closeModal() {
+        const modal = document.getElementById('confirmation-modal');
+        if (modal) {
+            modal.classList.remove('show');
+        }
+    }
+    
+    // Confirm and submit quiz
+    function confirmSubmit() {
+        closeModal();
+        quizForm.submit();
+    }
+    
+    // Close modal when clicking outside
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('confirmation-modal');
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        }
+    });
     
     // Timer functions
     function startTimer() {
