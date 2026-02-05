@@ -273,6 +273,28 @@
         min-width: 0;
     }
     
+    #questions-wrapper {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+    
+    #blank-canvas {
+        flex: 1;
+        display: none;
+        min-height: 200px;
+        background: white;
+    }
+    
+    #blank-canvas.visible {
+        display: block;
+    }
+    
+    #questions-wrapper.hidden {
+        display: none;
+    }
+    
     .question-container {
         flex: 1;
         padding: 15px 20px;
@@ -726,7 +748,7 @@
                     পরীক্ষা সমাপ্ত
                 </button>
             </div>
-            <div class="user-info">পরীক্ষার্থী: <strong>Nazmul Amin MD</strong></div>
+            <div class="user-info">পরীক্ষার্থী: <strong>Fahim MD</strong></div>
         </div>
     </div>
     
@@ -751,6 +773,7 @@
         
         <!-- Right Content Area -->
         <div class="quiz-content-area">
+            <div id="questions-wrapper">
             <form id="quiz-form" method="post" action="{% url 'core:submit_quiz' quiz.id %}">
                 {% csrf_token %}
                 
@@ -789,6 +812,8 @@
                     </div>
                 {% endfor %}
             </form>
+            </div>
+            <div id="blank-canvas" aria-hidden="true"></div>
             
             <!-- Navigation -->
             <div class="quiz-navigation">
@@ -801,9 +826,6 @@
                     </button>
                     <button type="button" class="nav-btn" id="next-btn" onclick="nextQuestion()">
                         এগিয়ে যান →
-                    </button>
-                    <button type="button" class="nav-btn submit-btn" id="submit-btn" onclick="submitQuiz()" style="display: none;">
-                        কুইজ জমা দিন
                     </button>
                 </div>
             </div>
@@ -843,6 +865,7 @@
     let currentQuestionIndex = 0;
     const totalQuestions = {{ questions|length }};
     let timeRemaining = {{ time_remaining_seconds }};
+    let showBlankCanvas = false;
     const timerElement = document.getElementById('timer');
     const timeDisplay = document.getElementById('time-display');
     const quizForm = document.getElementById('quiz-form');
@@ -884,9 +907,14 @@
     
     // Update question counter
     function updateQuestionCounter() {
-        const questionNum = currentQuestionIndex + 1;
-        document.getElementById('current-question').textContent = questionNum;
-        document.getElementById('current-question-header').innerHTML = 'প্রশ্ন: <strong>' + questionNum + '</strong>';
+        if (showBlankCanvas) {
+            document.getElementById('current-question').textContent = '—';
+            document.getElementById('current-question-header').innerHTML = 'প্রশ্ন: <strong>—</strong>';
+        } else {
+            const questionNum = currentQuestionIndex + 1;
+            document.getElementById('current-question').textContent = questionNum;
+            document.getElementById('current-question-header').innerHTML = 'প্রশ্ন: <strong>' + questionNum + '</strong>';
+        }
         updateProgress();
     }
     
@@ -908,18 +936,13 @@
     function updateNavigationButtons() {
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
-        const submitBtn = document.getElementById('submit-btn');
         
-        // Previous button
-        prevBtn.disabled = currentQuestionIndex === 0;
-        
-        // Next/Submit button
-        if (currentQuestionIndex === totalQuestions - 1) {
+        if (showBlankCanvas) {
+            prevBtn.disabled = false;
             nextBtn.style.display = 'none';
-            submitBtn.style.display = 'inline-block';
         } else {
+            prevBtn.disabled = currentQuestionIndex === 0;
             nextBtn.style.display = 'inline-block';
-            submitBtn.style.display = 'none';
         }
     }
     
@@ -927,7 +950,7 @@
     function updateQuestionNumbers() {
         document.querySelectorAll('.question-number-item').forEach((item, index) => {
             item.classList.remove('active');
-            if (index === currentQuestionIndex) {
+            if (!showBlankCanvas && index === currentQuestionIndex) {
                 item.classList.add('active');
             }
             
@@ -944,21 +967,47 @@
     
     // Navigate to question
     function goToQuestion(index) {
-        if (index >= 0 && index < totalQuestions) {
-            showQuestion(index);
+        if (index < 0 || index >= totalQuestions) return;
+        if (showBlankCanvas) {
+            hideBlankCanvasView();
         }
+        showQuestion(index);
+    }
+    
+    // Show blank canvas (after last question)
+    function showBlankCanvasView() {
+        showBlankCanvas = true;
+        document.getElementById('questions-wrapper').classList.add('hidden');
+        document.getElementById('blank-canvas').classList.add('visible');
+        updateNavigationButtons();
+        updateQuestionNumbers();
+        updateQuestionCounter();
+    }
+    
+    // Hide blank canvas and show questions again
+    function hideBlankCanvasView() {
+        showBlankCanvas = false;
+        document.getElementById('questions-wrapper').classList.remove('hidden');
+        document.getElementById('blank-canvas').classList.remove('visible');
+        updateNavigationButtons();
     }
     
     // Next question
     function nextQuestion() {
+        if (showBlankCanvas) return;
         if (currentQuestionIndex < totalQuestions - 1) {
             showQuestion(currentQuestionIndex + 1);
+        } else {
+            showBlankCanvasView();
         }
     }
     
     // Previous question
     function previousQuestion() {
-        if (currentQuestionIndex > 0) {
+        if (showBlankCanvas) {
+            hideBlankCanvasView();
+            showQuestion(totalQuestions - 1);
+        } else if (currentQuestionIndex > 0) {
             showQuestion(currentQuestionIndex - 1);
         }
     }
@@ -993,12 +1042,9 @@
         updateProgress();
     }
     
-    // Show confirmation modal
+    // Submit quiz (no confirmation popup)
     function submitQuiz() {
-        const modal = document.getElementById('confirmation-modal');
-        if (modal) {
-            modal.classList.add('show');
-        }
+        quizForm.submit();
     }
     
     // Close modal
@@ -1113,11 +1159,5 @@
     // Check scroll notification on scroll and resize
     window.addEventListener('scroll', checkScrollNotification);
     window.addEventListener('resize', checkScrollNotification);
-    
-    // Warn before leaving page
-    window.addEventListener('beforeunload', function(e) {
-        e.preventDefault();
-        e.returnValue = 'আপনি কি নিশ্চিত যে আপনি চলে যেতে চান? আপনার অগ্রগতি হারিয়ে যাবে।';
-    });
 </script>
 {% endblock %}

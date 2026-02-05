@@ -155,7 +155,7 @@ def submit_quiz(request, quiz_id):
     request.session.pop('start_time', None)
     request.session.pop('answers', None)
     
-    return redirect('core:completion', quiz_id=quiz_id)
+    return redirect('core:results', quiz_id=quiz_id)
 
 
 def completion(request, quiz_id):
