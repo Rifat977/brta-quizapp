@@ -427,10 +427,11 @@
         position: relative;
     }
     
-    .option:hover {
-        border-color: #148386;
-        background: #f0f9fa;
-        box-shadow: 0 2px 4px rgba(20, 131, 134, 0.1);
+    .option:hover,
+    .option-wrapper:hover .option {
+        border-color: #ffd700;
+        background: #fffef0;
+        box-shadow: 0 2px 6px rgba(255, 215, 0, 0.35);
     }
     
     /* Custom radio button styling */
@@ -479,12 +480,13 @@
         align-items: center;
     }
     
-    .option.selected {
-        background: #e4f3f2;
+    .option.selected,
+    .option-wrapper.selected .option {
+        background: #fffef0;
         color: #333;
-        border: 3px solid #148386;
+        border: 3px solid #ffd700;
         border-radius: 4px;
-        box-shadow: 0 2px 8px rgba(20, 131, 134, 0.3);
+        box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
     }
     
     .option.selected label {
